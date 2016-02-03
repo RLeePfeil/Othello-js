@@ -1,0 +1,58 @@
+body {
+  background-color: #F3F5F9;
+  margin: 20px;
+}
+
+#game-board {
+  border: 3px solid #666;
+  display: inline-block;
+  clear: both;
+  width: 100%;
+  max-width: 800px;
+
+}
+
+.square {
+  background-color: #8FF;
+  border: 1px solid #666;
+  box-sizing: border-box;
+  width: 12.5%;
+  padding-top: 12%;
+  height: 0;
+  float: left;
+  position: relative;
+  transition: all .35s ease-in-out 0s;
+}
+
+.square.first {
+  clear: left;
+}
+
+.square.odd {
+  background-color: #F8F;
+}
+
+.square.highlight {
+  box-shadow: 0 0 20px rgba(0, 0, 0, .5) inset, 0 0 5px rgba(0, 0, 0, .5) inset, 0 0 40px rgba(0, 0, 0, .5) inset;
+}
+
+.piece {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  border-radius: 100%;
+  width: 80%;
+  padding-top: 80%;
+  height: 0;
+  display: inline-block;
+  box-shadow: 1px 2px 1px rgba(0,0,0,.35);
+  transition: all .3s ease-in-out 0s;
+}
+
+.piece.player1 {
+  background-color: #000;
+}
+
+.piece.player2 {
+  background-color: #FFF;
+}

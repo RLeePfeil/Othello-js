@@ -1,7 +1,6 @@
 # Othello-js
 
-Play othello against a simple AI in html, css and javascript.
-Scales to all device sizes.
+Play othello against a simple AI in html, css and javascript. Scales to all device sizes.
 
 ## Installation
 
@@ -9,9 +8,9 @@ No installation, this is a standalone web app, just open othello.html
 
 ## Usage
 
-Rules can be found here: https://en.wikipedia.org/wiki/Reversi#Rules
-You are black, place a piece at the beginning of the game, and the computer
-will automatically play after you.
+Rules can be found on [Wikipedia](https://en.wikipedia.org/wiki/Reversi#Rules)
+
+You are black, place a piece at the beginning of the game, and the computer will automatically play after you.
 
 ## Contributing
 
@@ -24,12 +23,17 @@ will automatically play after you.
 ## History
 
 2006
+
 AS2 version written
 
-2016 Jan
-Javascript version ported with rudimentary styles and functionality
 
 2016 Jan
+
+Javascript version ported with rudimentary styles and functionality
+
+
+2016 Jan
+
 Added "possible moves" highlighting
 
 ## Credits

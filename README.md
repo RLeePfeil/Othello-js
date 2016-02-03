@@ -22,19 +22,12 @@ You are black, place a piece at the beginning of the game, and the computer will
 
 ## History
 
-2006
+-2006
+  -AS2 version written
+-2016 Jan
+  -Javascript version ported with rudimentary styles and functionality
+  -Added "possible moves" highlighting
 
-AS2 version written
-
-
-2016 Jan
-
-Javascript version ported with rudimentary styles and functionality
-
-
-2016 Jan
-
-Added "possible moves" highlighting
 
 ## Credits
 

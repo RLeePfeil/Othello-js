@@ -270,6 +270,8 @@ var Square = function (g, acs, dwn)
 			// Remove click event to place piece
 			this.mySquare.onclick = null;
 
+			setTimeout(function(){squareObj.myPiece.classList.add("placed")}, 20); // Give the piece the "placed" class so it falls onto the board
+
 			// Clear the valid moves when a new piece is placed
 			this.game.removeValidMoves();
 

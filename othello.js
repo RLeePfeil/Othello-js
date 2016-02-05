@@ -239,7 +239,10 @@ var Square = function (g, acs, dwn)
 	}
 	this.mySquare.setAttribute("class", classlist);
 	this.mySquare.onclick = function(){
-		squareObj.placePiece(null, true);
+		// Only allow clicking if it's the player's turn
+		if (squareObj.game.player == "player1") {
+			squareObj.placePiece(null, true);
+		}
 	};
 	this.game.container.appendChild(this.mySquare);
 

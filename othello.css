@@ -41,10 +41,14 @@ body {
   background-color: #d0a75f;
 }
 
-.square.highlight {
+.square.highlight:hover {
   /*box-shadow: 0 0 20px rgba(0, 0, 0, .5) inset, 0 0 5px rgba(0, 0, 0, .5) inset, 0 0 40px rgba(0, 0, 0, .5) inset;*/
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) inset;
+  box-shadow: inset 0px 0px 0px 1px #333, 0 0 20px rgba(0, 0, 0, 0.6) inset;
   /*transform: translate3d(0, 0, .5em);*/
+}
+
+.square.odd.highlight:hover {
+  box-shadow: inset 0px 0px 0px 1px #333, 0 0 20px rgba(0, 0, 0, 0.75) inset;
 }
 
 /*.square.highlight::before {

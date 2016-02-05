@@ -26,11 +26,21 @@ body {
   box-shadow: 0 0 5px rgba(0,0,0,.05), 0 0 1px 1px rgba(0,0,0,.05)
 }
 
+#game-name {
+  position: absolute;
+  left: 1em;
+  font-weight: 100;
+  /* color: #d0a75f; */ /* TAN */
+  color: #45658f; /* BLUE */
+}
+
 #tally-player1, #tally-player2 {
   display: inline-block;
-  margin: 0 1em;
-  font-weight: bold;
   font-size: 100%;
+  font-weight: bold;
+  margin-left: 1em;
+  text-align: left;
+  width: 3.5em;
 }
 
 #tally-player1:before, #tally-player2:before {
@@ -95,7 +105,7 @@ body {
   float: left;
   position: relative;
   transition: all .15s ease-out 0s;
-  /*transform-style: preserve-3d;*/
+  /*transform-style: preserve-3d;*/ /* Can't do this, breaks click areas */
 }
 
 .square.first {
@@ -168,6 +178,40 @@ body {
   border-bottom: .2em solid #111;
 }
 
+#messages {
+  color: #999;
+  font-size: 90%;
+  left: 0;
+  padding-top: 1em;
+  position: absolute;
+  text-align: center;
+  text-shadow: 0 1px #fff;
+  top: 100%;
+  width: 100%;
+}
+
+#messages span {
+  position: absolute;
+  width: 100%;
+  display: block;
+  opacity: 0;
+  transition: all .35s ease-in 0s;
+}
+
+#messages span.fadein {
+  opacity: 1;
+}
+
+#messages span.error {
+  color: #C33;
+}
+
+@media screen and (max-width: 600px) {
+  #game-board {
+    margin-top: -5%;
+  }
+}
+
 @media screen and (min-width: 1000px) {
   #game-header {
     width: 20%;
@@ -176,8 +220,16 @@ body {
     margin-top: 22%;
   }
 
+  #game-name {
+    left: 0;
+    bottom: 100%;
+    width: 100%;
+    margin-bottom: 1em;
+    font-size: 200%;
+  }
+
   #pass-button {
-    border-top: 1px solid #ccc;
+    border-top: 1px solid #EEE;
     display: inline-block;
     margin-top: 1em;
     padding-bottom: 0.25em;

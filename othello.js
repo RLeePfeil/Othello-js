@@ -4,6 +4,7 @@ var GAME = GAME ||
 	down: 8, // Number of squares down the board
 	container: null, // Stage object
 	passBtn: null, // Pass button
+	messages: null, // Message holding div
 	player: 'player1', // Holds the current player as a string
 
 	tweens: {}, // Holds animations
@@ -16,6 +17,7 @@ var GAME = GAME ||
 		// Get elements
 		GAME.container = document.getElementById("game-board");
 		GAME.passBtn = document.getElementById("pass-button");
+		GAME.messages = document.getElementById("messages");
 
 		// Set up the board
 		GAME.setUp(GAME.across, GAME.down);
@@ -38,8 +40,9 @@ var GAME = GAME ||
 
 		// Highlight valid moves at the start
 		GAME.validMoves();
-		
+
 		console.log("Black's Move");
+		GAME.showMessage("Black's Move");
 		// TODO show whose turn it is
 		//whoseTurn_mc.gotoAndStop('player1');
 		//whoseTurn_txt.mouseEnabled = false;
@@ -76,9 +79,8 @@ var GAME = GAME ||
 	{
 		if (GAME.player == 'player1') {
 			GAME.player = 'player2';
-			// TODO update to say "player 2" or "White's Move"
-			//whoseTurn_obj.gotoAndPlay('player1');
-			//whoseTurn_txt.text = "White's Move"
+			// update to say "player 2" or "White's Move"
+			GAME.showMessage("White's Move");
 
 			// Every time we switch players, show valid moves!
 			GAME.validMoves();
@@ -87,9 +89,8 @@ var GAME = GAME ||
 			setTimeout(GAME.computerMove, 1800);
 		} else if (GAME.player == 'player2') {
 			GAME.player = 'player1';
-			// TODO update to say "player 1" or "Black's Move"
-			//whoseTurn_mc.gotoAndPlay('player2');
-			//whoseTurn_txt.text = "Black's Move"
+			// update to say "player 1" or "Black's Move"
+			GAME.showMessage("Black's Move");
 
 			// Every time we switch players, show valid moves!
 			GAME.validMoves();
@@ -174,15 +175,44 @@ var GAME = GAME ||
  	},
 
 	/*
-	 * Takes a message (msg) and display it
+	 * Takes a message (msg) and display it, replacing the old message
 	 */
-	writeError: function(msg)
+	showMessage: function(msg)
 	{
-		// TODO create new error message, show it, fade it out
-		//error_mc.error_txt.text+= "\n"+msg+"\n";
-		//tweens.errorScroll = new Tween(error_mc, 'verticalScrollPosition', Strong.easeOut, error_mc.verticalScrollPosition, error_mc.textHeight, 30);
-		//error_mc.verticalScrollPosition = error_mc.textHeight;
-		alert("ERROR: " + msg);
+		// Fade out old message, then remove
+		if (GAME.messages.children.length > 0) {
+			var curMessage = GAME.messages.children[0];
+			curMessage.classList.remove("fadein");
+			setTimeout(function(){curMessage.parentElement.removeChild(curMessage);}, 350);
+		}
+
+		// Add new message
+		var newMessage = document.createElement("span");
+		newMessage.appendChild(document.createTextNode(msg));
+		GAME.messages.appendChild(newMessage);
+		setTimeout(function(){newMessage.classList.add("fadein");}, 350);
+	},
+
+	/*
+	 * Hides the current message temporarily, then shows it again afterwards
+	 */
+	showError: function(msg)
+	{
+		// Fade out old message, then remove
+		if (GAME.messages.children.length > 0) {
+			var curMessage = GAME.messages.children[0];
+			curMessage.classList.remove("fadein");
+			setTimeout(function(){curMessage.classList.add("fadein");}, 3000);
+		}
+
+		// Add new message
+		var newMessage = document.createElement("span");
+		newMessage.classList.add("error");
+		newMessage.appendChild(document.createTextNode(msg));
+		GAME.messages.appendChild(newMessage);
+		setTimeout(function(){newMessage.classList.add("fadein");}, 350);
+		setTimeout(function(){newMessage.classList.remove("fadein");}, 2650);
+		setTimeout(function(){newMessage.parentElement.removeChild(newMessage);}, 3350);
 	},
 
 	/*
@@ -249,7 +279,7 @@ var GAME = GAME ||
 		}
 
 		if (maxNum == 0 && maxIndex == 0) {
-			GAME.writeError("Computer can't move!");
+			GAME.showError("Computer can't move!");
 			GAME.switchPlayer();
 		} else {
 			totals[maxIndex].obj.placePiece(null, false);
@@ -304,7 +334,7 @@ var Square = function (g, acs, dwn)
 		if (playerIsPlacing) {
 			var piecesToFlip = this.checkPiece();
 			if(piecesToFlip == false) {
-				this.game.writeError("Invalid move. ("+this.myX+","+this.myY+")");
+				this.game.showError("Invalid move. ("+this.myX+","+this.myY+")");
 				// TODO show the invalid move X on the square
 				//this.invalidMove_mc.gotoAndPlay(2);
 				return false;
@@ -440,7 +470,7 @@ var Square = function (g, acs, dwn)
 		{
 			for (var j=0; j<which[i].length; j++)
 			{
-				//squareObj.game.writeError("flipping "+which[i][j].x+" "+which[i][j].y);
+				//squareObj.game.showError("flipping "+which[i][j].x+" "+which[i][j].y);
 				setTimeout(squareObj.game.board[which[i][j].x][which[i][j].y].obj.flipMe, flipCount * delay);
 				flipCount++;
 
@@ -472,7 +502,7 @@ var Square = function (g, acs, dwn)
 		var isWin = squareObj.game.checkWin();
 		if (isWin != false) {
 			console.log(isWin);
-			squareObj.game.writeError(isWin);
+			squareObj.game.showMessage(isWin);
 		}
 	}
 

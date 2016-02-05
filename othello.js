@@ -36,6 +36,9 @@ var GAME = GAME ||
 		// Set up button events
 		GAME.passBtn.onclick = GAME.passTurn;
 
+		// Highlight valid moves at the start
+		GAME.validMoves();
+		
 		console.log("Black's Move");
 		// TODO show whose turn it is
 		//whoseTurn_mc.gotoAndStop('player1');
@@ -99,12 +102,10 @@ var GAME = GAME ||
 	 */
 	validMoves: function()
 	{
-	 console.log("adding valid move highlighting");
 	 for (var a=0; a<GAME.board.length; a++) {
 		 for (var d=0; d<GAME.board[a].length; d++){
 			 if (!GAME.board[a][d].obj.myPiece && !!GAME.board[a][d].obj.checkPiece()){
 				 GAME.board[a][d].obj.mySquare.classList.add("highlight");
-				 console.log("highlighting "+a+" "+d);
 			 }
 		 }
 	 }
@@ -115,7 +116,6 @@ var GAME = GAME ||
 	 */
 	removeValidMoves: function()
 	{
-	 console.log("removing valid move highlighting");
 	 for (var a=0; a<GAME.board.length; a++) {
 		 for (var d=0; d<GAME.board[a].length; d++){
 			 GAME.board[a][d].obj.mySquare.classList.remove("highlight");

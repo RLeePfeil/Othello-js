@@ -5,9 +5,16 @@ body {
   color: #353535;
 }
 
+#container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
 #game-container {
-  perspective: 50em;
+  perspective: 150em;
   transform-style: preserve-3d;
+  max-width: 800px;
 }
 
 #game-header {
@@ -71,9 +78,12 @@ body {
   width: 100%;
   max-width: 800px;
   box-shadow: 0 2px 5px rgba(0,0,0,.3);
-  transform-origin: 0 100% 0;
-  transform: rotateX(20deg) rotateY(2deg) rotateZ(2deg);
+  /*transform-origin: 0 100% 0;
+  transform: rotateX(20deg) rotateY(2deg) rotateZ(2deg);*/
+  transform: rotateX(30deg) rotateY(2deg) rotateZ(2deg) translateZ(-30em) translateY(-15em);
   transform-style: preserve-3d;
+  transform: all .35s ease-in-out 0s;
+  margin-top: -10%;
 }
 
 .square {
@@ -156,4 +166,27 @@ body {
 .piece.player2 {
   background-color: #F3F3F3;
   border-bottom: .2em solid #111;
+}
+
+@media screen and (min-width: 1000px) {
+  #game-header {
+    width: 20%;
+    float: right;
+    margin-right: 7%;
+    margin-top: 22%;
+  }
+
+  #pass-button {
+    border-top: 1px solid #ccc;
+    display: inline-block;
+    margin-top: 1em;
+    padding-bottom: 0.25em;
+    padding-top: 0.75em;
+    position: static;
+  }
+
+  #game-container {
+    width: 66%;
+    float: left;
+  }
 }

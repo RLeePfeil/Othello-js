@@ -124,6 +124,56 @@ var GAME = GAME ||
 	},
 
 	/*
+	 * Return the number of pieces in an array by their owners
+	 */
+	tallyPieces: function() {
+		//GAME.board TODO
+		var playerTally = {};
+		GAME.forEachPiece(function(piece){
+			if (playerTally[piece.myPlayer]) {
+				playerTally[piece.myPlayer] ++;
+			} else {
+				playerTally[piece.myPlayer] = 1;
+			}
+		});
+
+		for (player in playerTally) {
+			GAME.showScore(player, playerTally[player]);
+		}
+	},
+
+	/*
+	 * Takes id of player ("player1", "player2") and score, displays it
+	 */
+	showScore: function(player, score) {
+		document.getElementById("tally-"+player).innerHTML = score;
+	},
+
+	/*
+	 * Helper function, runs a function on each square
+	 */
+	forEachSquare: function(doThing) {
+		for (var a=0; a<GAME.board.length; a++) {
+ 			for (var d=0; d<GAME.board[a].length; d++){
+				doThing(GAME.board[a][d].obj.mySquare);
+			}
+	 	}
+ 	},
+
+	/*
+	 * Helper function, runs a function on each piece
+	 */
+	forEachPiece: function(doThing) {
+		for (var a=0; a<GAME.board.length; a++) {
+ 			for (var d=0; d<GAME.board[a].length; d++){
+				if (!!GAME.board[a][d].obj.myPiece) {
+					doThing(GAME.board[a][d].obj);
+				}
+			}
+	 	}
+ 	},
+
+	/*
 	 * Takes a message (msg) and display it
 	 */
 	writeError: function(msg)
@@ -280,6 +330,10 @@ var Square = function (g, acs, dwn)
 
 			// Check win conditions after piece placement is finished
 			setTimeout(function(){squareObj._checkWin()}, 250);
+
+			// Update tally when piece placement is finished
+			setTimeout(function(){squareObj.game.tallyPieces()}, 250);
+
 			if (playerIsPlacing) {
 				// flip won pieces after the piece is placed
 				setTimeout(function(e){squareObj.flipPieces(piecesToFlip)}, 250);
@@ -387,8 +441,11 @@ var Square = function (g, acs, dwn)
 			for (var j=0; j<which[i].length; j++)
 			{
 				//squareObj.game.writeError("flipping "+which[i][j].x+" "+which[i][j].y);
-				setTimeout(squareObj.game.board[which[i][j].x][which[i][j].y].obj.flipMe, flipCount*delay);
+				setTimeout(squareObj.game.board[which[i][j].x][which[i][j].y].obj.flipMe, flipCount * delay);
 				flipCount++;
+
+				// Update tally when piece flipping starts
+				setTimeout(squareObj.game.tallyPieces, flipCount * delay);
 			}
 		}
 

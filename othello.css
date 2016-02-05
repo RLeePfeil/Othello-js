@@ -1,11 +1,66 @@
 body {
   background-color: #F3F5F9;
   margin: 20px;
+  font-family: Open Sans, Helvetica, Arial, sans-serif;
+  color: #353535;
 }
 
 #game-container {
   perspective: 50em;
   transform-style: preserve-3d;
+}
+
+#game-header {
+  padding: 1em;
+  text-align: center;
+  position: relative;
+  background: #FFF;
+  margin: -20px;
+  box-shadow: 0 0 5px rgba(0,0,0,.05), 0 0 1px 1px rgba(0,0,0,.05)
+}
+
+#tally-player1, #tally-player2 {
+  display: inline-block;
+  margin: 0 1em;
+  font-weight: bold;
+  font-size: 100%;
+}
+
+#tally-player1:before, #tally-player2:before {
+  content: "";
+  display: inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 100%;
+  vertical-align: middle;
+  margin-right: .5em;
+}
+
+#tally-player1:before {
+  background-color: #222;
+}
+
+#tally-player2:before {
+  background-color: #FAFAFA;
+  box-shadow: inset 0 0 1px #CCC;
+}
+
+#pass-button {
+  color: #855;
+  font-weight: bold;
+  padding: 0.5em 1em;
+  position: absolute;
+  right: 0;
+  text-decoration: none;
+  text-transform: uppercase;
+  top: 0.5em;
+  /* border-radius: .25em;
+  border: 1px solid #CCC;*/
+  transition: all .25s ease-in-out 0s;
+}
+
+#pass-button:hover {
+  color: #C33;
 }
 
 #game-board {
@@ -29,7 +84,7 @@ body {
   height: 0;
   float: left;
   position: relative;
-  transition: all .35s ease-in-out 0s;
+  transition: all .15s ease-out 0s;
   /*transform-style: preserve-3d;*/
 }
 
@@ -78,11 +133,12 @@ body {
   padding-top: 70%;
   height: 0;
   display: inline-block;
-  box-shadow: 1px 2px 1px rgba(0,0,0,.35);
+  box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.35), -1px -2px 4px rgba(0, 0, 0, 0.35) inset;
   transition: all .3s ease-in-out 0s;
   opacity: 1;
   transform: scale(2);
   transition: all .35s ease-out 0s;
+  margin-top: -.2em;
   opacity: .5;
 }
 
@@ -94,8 +150,10 @@ body {
 
 .piece.player1 {
   background-color: #242424;
+  border-bottom: .2em solid #AAA;
 }
 
 .piece.player2 {
   background-color: #F3F3F3;
+  border-bottom: .2em solid #111;
 }

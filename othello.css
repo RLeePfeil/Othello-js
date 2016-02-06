@@ -31,7 +31,8 @@ body {
   left: 1em;
   font-weight: 100;
   /* color: #d0a75f; */ /* TAN */
-  color: #45658f; /* BLUE */
+  /* color: #45658f; */ /* BLUE */
+  color: #3b3; /* GREEN */
 }
 
 #tally-player1, #tally-player2 {
@@ -87,7 +88,8 @@ body {
   clear: both;
   width: 100%;
   max-width: 800px;
-  box-shadow: 0 2px 5px rgba(0,0,0,.3);
+  /* box-shadow: 0 2px 5px rgba(0,0,0,.3); */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3), 0 150px 80px rgba(0, 0, 0, 0.3);
   /*transform-origin: 0 100% 0;
   transform: rotateX(20deg) rotateY(2deg) rotateZ(2deg);*/
   transform: rotateX(30deg) rotateY(2deg) rotateZ(2deg) translateZ(-30em) translateY(-15em);
@@ -97,7 +99,8 @@ body {
 }
 
 .square {
-  background-color: #45658f;
+  /* background-color: #45658f; */
+  background-color: #094;
   box-shadow: inset 0px 0px 0px 1px #333;
   width: 12.5%;
   padding-top: 12.5%;
@@ -113,7 +116,8 @@ body {
 }
 
 .square.odd {
-  background-color: #d0a75f;
+  /* background-color: #d0a75f; */
+  background-color: #3b3;
 }
 
 .square.highlight:hover {

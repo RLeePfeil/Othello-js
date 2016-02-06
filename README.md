@@ -27,6 +27,9 @@ You are black, place a piece at the beginning of the game, and the computer will
 - 2016 Jan
   - Javascript version ported with rudimentary styles and functionality
   - Added "possible moves" highlighting
+- 2016 Feb
+  - Style makeover (green board, skeuomorphic pieces)
+  - Header bar with points; Header bar becomes box to the right of board on larger screens
 
 
 ## Credits

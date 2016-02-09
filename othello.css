@@ -210,6 +210,36 @@ body {
   color: #C33;
 }
 
+#errors {
+  left: 0;
+  position: fixed;
+  right: 0;
+  text-align: center;
+  bottom: 0;
+  z-index: 10;
+}
+
+#errors span {
+  background-color: #fcc;
+  color: #c33;
+  font-size: 100%;
+  padding: 1.2em;
+  transition: all 0.35s ease-in 0s;
+  display: block;
+  box-sizing: border-box;
+  position: absolute;
+  width: 100%;
+  bottom: -5em;
+  /* opacity: 0; */
+}
+
+#errors span.fadein {
+  opacity: 1;
+  bottom: 0em;
+  transition: all 0.15s ease-out 0s;
+}
+
+
 @media screen and (max-width: 600px) {
   #game-board {
     margin-top: -5%;
@@ -244,5 +274,21 @@ body {
   #game-container {
     width: 66%;
     float: left;
+  }
+
+  #errors {
+    top: 0;
+    bottom: auto;
+  }
+
+  #errors span {
+    bottom: auto;
+    top: -5em;
+  }
+
+  #errors span.fadein {
+    bottom: auto;
+    opacity: 1;
+    top: 0;
   }
 }

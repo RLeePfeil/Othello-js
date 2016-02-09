@@ -1,3 +1,22 @@
+/*
+ * TODO Enancements
+ *
+ * - Improve AI -
+ * Computer should...
+ *   take corners whenever possible, disallow user from taking corners
+ *   make moves with the highest (pieces flipped : pieces opponent can flip next turn) ratio
+ *   not make plays that allow the user to put a piece on an edge (maybe?)
+ *
+ * - 2 player mode (instead of only vs AI) -
+ * Add a menu to select 1player vs com and 2 player
+ * Also include "game restart" button (and possibly "undo")
+ *
+ * - Graph of gameplay -
+ * At the end, show a screen containing a graph of the amount of board captured over time
+ *
+ */
+
+
 var GAME = GAME ||
 {
 	across: 8, // Number of squares across the board
@@ -5,6 +24,7 @@ var GAME = GAME ||
 	container: null, // Stage object
 	passBtn: null, // Pass button
 	messages: null, // Message holding div
+	errors: null, // Error holding div
 	player: 'player1', // Holds the current player as a string
 
 	tweens: {}, // Holds animations
@@ -18,6 +38,7 @@ var GAME = GAME ||
 		GAME.container = document.getElementById("game-board");
 		GAME.passBtn = document.getElementById("pass-button");
 		GAME.messages = document.getElementById("messages");
+		GAME.errors = document.getElementById("errors");
 
 		// Set up the board
 		GAME.setUp(GAME.across, GAME.down);
@@ -198,21 +219,16 @@ var GAME = GAME ||
 	 */
 	showError: function(msg)
 	{
-		// Fade out old message, then remove
-		if (GAME.messages.children.length > 0) {
-			var curMessage = GAME.messages.children[0];
-			curMessage.classList.remove("fadein");
-			setTimeout(function(){curMessage.classList.add("fadein");}, 3000);
+		// Change error text, fade out after 3 sec
+		var curMessage = GAME.errors.children[0];
+		curMessage.innerHTML = msg;
+		curMessage.classList.add("fadein");
+
+		if (GAME.errorTimeout) {
+			clearTimeout(GAME.errorTimeout);
 		}
 
-		// Add new message
-		var newMessage = document.createElement("span");
-		newMessage.classList.add("error");
-		newMessage.appendChild(document.createTextNode(msg));
-		GAME.messages.appendChild(newMessage);
-		setTimeout(function(){newMessage.classList.add("fadein");}, 350);
-		setTimeout(function(){newMessage.classList.remove("fadein");}, 2650);
-		setTimeout(function(){newMessage.parentElement.removeChild(newMessage);}, 3350);
+		GAME.errorTimeout = setTimeout(function(){curMessage.classList.remove("fadein");}, 3000);
 	},
 
 	/*

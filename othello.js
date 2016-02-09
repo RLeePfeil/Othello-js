@@ -107,7 +107,7 @@ var GAME = GAME ||
 			GAME.validMoves();
 
 			// Take a bit to make it seem like the computer is thinking
-			setTimeout(GAME.computerMove, 1800);
+			setTimeout(GAME.computerMove, Math.round(800+Math.random()*1200));
 		} else if (GAME.player == 'player2') {
 			GAME.player = 'player1';
 			// update to say "player 1" or "Black's Move"
@@ -264,42 +264,65 @@ var GAME = GAME ||
 	 */
 	computerMove: function()
 	{
-		var totals = [];
+		var possibleMoves = []; // Holds the number of possible moves
 
 		for (var c=0; c<GAME.board.length; c++) {
 			for (var r=0; r<GAME.board[c].length; r++) {
 				if(GAME.board[c][r].obj.myPlayer == null) {
 					var checkPieceResult = GAME.board[c][r].obj.checkPiece();
 					if (checkPieceResult != false) {
-						totals.push({'obj':GAME.board[c][r].obj, 'pieces':checkPieceResult});
+						possibleMoves.push({'obj':GAME.board[c][r].obj, 'pieces':checkPieceResult});
 					}
 				}
 			}
 		}
 
-		var maxNum = 0;
-		var maxIndex = 0;
+		var indexToPlace = null;
 
-		for (var i=0; i< totals.length; i++) {
-			var tempCount = 0;
-			for (var m=0; m<totals[i].pieces.length; m++) {
-				for (var n=0; n<totals[i].pieces[m].length; n++) {
-					tempCount++;
+		// See if any of the moves are corner pieces - if so, go for it!
+
+		/* Moves with the highest favor will be chosen.
+		 * +1 favor for each piece that can be flipped
+		 * +10 favor for a corner piece
+		 * +5 favor for a side piece
+		 * -X for favor of best move that could be made by opponent using same credentials TODO
+		 */
+
+		var favor = 0; // Holds the highest favor value using credentials above
+		var chosenMove = 0; // The index of the possibleMoves array with the highest favor
+
+		for (var i=0; i< possibleMoves.length; i++) {
+			// Add up the number of pieces that would be flipped
+			var tempFavor = 0;
+			for (var m=0; m<possibleMoves[i].pieces.length; m++) {
+				for (var n=0; n<possibleMoves[i].pieces[m].length; n++) {
+					tempFavor++;
 				}
 			}
 
-			if (tempCount > maxNum) {
-				maxNum = tempCount;
-				maxIndex = i;
+			// Is the square on the left/right edge of the board?
+			if (possibleMoves[i].obj.myX == 0 || possibleMoves[i].obj.myX == GAME.across-1) {
+				tempFavor += 5;
+			}
+
+			// Is the square on the top/bottom edge of the board?
+			if (possibleMoves[i].obj.myY == 0 || possibleMoves[i].obj.myY == GAME.down-1) {
+				tempFavor += 5;
+			}
+
+			// If this move has the highest favor, choose it
+			if (tempFavor > favor) {
+				favor = tempFavor;
+				chosenMove = i;
 			}
 		}
 
-		if (maxNum == 0 && maxIndex == 0) {
+		if (favor == 0 && chosenMove == 0) {
 			GAME.showError("Computer can't move!");
 			GAME.switchPlayer();
 		} else {
-			totals[maxIndex].obj.placePiece(null, false);
-			setTimeout(totals[maxIndex].obj.flipPieces, 400, totals[maxIndex].pieces);
+			possibleMoves[chosenMove].obj.placePiece(null, false);
+			setTimeout(possibleMoves[chosenMove].obj.flipPieces, 400, possibleMoves[chosenMove].pieces);
 		}
 	}
 }

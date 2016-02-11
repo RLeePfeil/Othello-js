@@ -332,7 +332,7 @@ var GhostBoard = function(board, moveToMake, currentDepth, maxDepth, favor)
 {
 	var ogb = this; // ogb stands for "originalGhostBoard"
 	this.currentDepth = currentDepth == undefined ? 0 : currentDepth;
-	this.maxDepth = maxDepth == undefined ? 3 : maxDepth;
+	this.maxDepth = maxDepth == undefined ? 4 : maxDepth;
 	this.across = board.length;
 	this.down = board[0].length;
 	this.player = GAME.player; // The ghost board is created with the original player
@@ -351,7 +351,7 @@ var GhostBoard = function(board, moveToMake, currentDepth, maxDepth, favor)
 				if (board[c][r].obj.myPlayer) {
 					thePlayer = board[c][r].obj.myPlayer;
 				}
-				
+
 				// Replace the square on the ghost board with a ghost square
 				var newGhostSquare = new GhostSquare(ogb, c, r);
 				newGhostSquare.myPlayer = thePlayer;
@@ -412,17 +412,37 @@ var GhostBoard = function(board, moveToMake, currentDepth, maxDepth, favor)
 			for (var m=0; m<possibleMoves[i].pieces.length; m++) {
 				for (var n=0; n<possibleMoves[i].pieces[m].length; n++) {
 					tempFavor++;
+
+					// If the flipped pieces are on an edge, give extra points
+					// Is the square on the left/right edge of the board?
+					if (possibleMoves[i].pieces[m].myX == 0 || possibleMoves[i].pieces[m].myX == GAME.across-1) {
+						tempFavor += 5;
+					}
+
+					// Is the square on the top/bottom edge of the board?
+					if (possibleMoves[i].pieces[m].myY == 0 || possibleMoves[i].pieces[m].myY == GAME.down-1) {
+						tempFavor += 5;
+					}
 				}
 			}
+
+			// If the square is on both edges... it's a corner!
+			var cornerCheck = 0;
 
 			// Is the square on the left/right edge of the board?
 			if (possibleMoves[i].obj.myX == 0 || possibleMoves[i].obj.myX == GAME.across-1) {
 				tempFavor += 5;
+				cornerCheck++;
 			}
 
 			// Is the square on the top/bottom edge of the board?
 			if (possibleMoves[i].obj.myY == 0 || possibleMoves[i].obj.myY == GAME.down-1) {
 				tempFavor += 5;
+				cornerCheck++;
+			}
+
+			if (cornerCheck == 2) {
+				favor += 20; // Corners are hella important!
 			}
 
 			// If this move has the highest favor, choose it
@@ -464,9 +484,9 @@ var GhostBoard = function(board, moveToMake, currentDepth, maxDepth, favor)
 	// Place the piece and flip the others
 	this.board[moveToMake.obj.myX][moveToMake.obj.myY].obj.placePiece();
 	this.board[moveToMake.obj.myX][moveToMake.obj.myY].obj.flipPieces(moveToMake.pieces);
-	
+
 	console.log(moveToMake.obj.myX+", "+moveToMake.obj.myY);
-	
+
 	// This will be a number - the highest possible favor for this move assuming intelligent play
 	return this;
 }

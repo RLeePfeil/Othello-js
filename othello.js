@@ -290,32 +290,14 @@ var GAME = GAME ||
 		 * -X for favor of best move that could be made by opponent using same credentials TODO
 		 */
 
-		var favor = 0; // Holds the highest favor value using credentials above
+		var favor = -1*GAME.board.across*GAME.board.down; // Holds the highest favor value using credentials above
 		var chosenMove = 0; // The index of the possibleMoves array with the highest favor
 
 		for (var i=0; i< possibleMoves.length; i++) {
 			// Create ghost boards and follow possible moves through
-			var ghost = new GhostBoard(board, possibleMoves[i]);
-			console.log("-ghost-");
-			console.log(ghost);
-
-			// Add up the number of pieces that would be flipped
-			var tempFavor = 0;
-			for (var m=0; m<possibleMoves[i].pieces.length; m++) {
-				for (var n=0; n<possibleMoves[i].pieces[m].length; n++) {
-					tempFavor++;
-				}
-			}
-
-			// Is the square on the left/right edge of the board?
-			if (possibleMoves[i].obj.myX == 0 || possibleMoves[i].obj.myX == GAME.across-1) {
-				tempFavor += 5;
-			}
-
-			// Is the square on the top/bottom edge of the board?
-			if (possibleMoves[i].obj.myY == 0 || possibleMoves[i].obj.myY == GAME.down-1) {
-				tempFavor += 5;
-			}
+			var ghostBoard = new GhostBoard(board, possibleMoves[i]);
+			tempFavor = ghostBoard.computerMoveRecursive(ghostBoard.board, ghostBoard.currentDepth, ghostBoard.maxDepth);
+			console.log("TOTAL favor for possibility "+i+": "+tempFavor);
 
 			// If this move has the highest favor, choose it
 			if (tempFavor > favor) {
@@ -349,14 +331,13 @@ var GAME = GAME ||
 var GhostBoard = function(board, moveToMake, currentDepth, maxDepth, favor)
 {
 	var ogb = this; // ogb stands for "originalGhostBoard"
-	currentDepth = currentDepth == undefined ? 2 : currentDepth;
-	maxDepth = maxDepth == undefined ? 2 : maxDepth;
-	var across = board.length;
-	var down = board[0].length;
-	var player = GAME.player; // The ghost board is created with the original player
-	board = createGhostBoard(board, moveToMake); // Create the initial ghost board taking into account the new piece to place and pieces to flip
+	this.currentDepth = currentDepth == undefined ? 0 : currentDepth;
+	this.maxDepth = maxDepth == undefined ? 3 : maxDepth;
+	this.across = board.length;
+	this.down = board[0].length;
+	this.player = GAME.player; // The ghost board is created with the original player
 
-	function createGhostBoard(board, moveToMake)
+	this.createGhostBoard = function(board, moveToMake)
 	{
 		var newBoard = [];
 
@@ -378,15 +359,21 @@ var GhostBoard = function(board, moveToMake, currentDepth, maxDepth, favor)
 			}
 		}
 
-		// Place the piece and flip the others
-		newBoard[moveToMake.obj.myX][moveToMake.obj.myY].obj.placePiece();
-		newBoard[moveToMake.obj.myX][moveToMake.obj.myY].obj.flipPieces(moveToMake.pieces);
-
 		return newBoard;
 	}
 
-	function computerMoveRecursive(board, currentDepth, maxDepth, favor)
+	this.switchPlayer = function() {
+		if (ogb.player == "player1") {
+			ogb.player = "player2";
+		} else {
+			ogb.player = "player1";
+		}
+	}
+
+	this.computerMoveRecursive = function(board, currentDepth, maxDepth, favor)
 	{
+		favor = favor == undefined ? 0 : favor;
+
 		var possibleMoves = []; // Holds the number of possible moves
 
 		for (var c=0; c<board.length; c++) {
@@ -413,7 +400,7 @@ var GhostBoard = function(board, moveToMake, currentDepth, maxDepth, favor)
 		 * -X for favor of best move that could be made by opponent using same credentials TODO
 		 */
 
-		var ghostFavor = 0; // Holds the highest favor value using credentials above
+		var maxFavor = 0; // Holds the highest favor value using credentials above
 		var chosenMove = 0; // The index of the possibleMoves array with the highest favor
 
 		for (var i=0; i< possibleMoves.length; i++) {
@@ -439,8 +426,8 @@ var GhostBoard = function(board, moveToMake, currentDepth, maxDepth, favor)
 			}
 
 			// If this move has the highest favor, choose it
-			if (tempFavor > ghostFavor) {
-				ghostFavor = tempFavor;
+			if (tempFavor > maxFavor) {
+				maxFavor = tempFavor;
 				chosenMove = i;
 			}
 		}
@@ -451,13 +438,21 @@ var GhostBoard = function(board, moveToMake, currentDepth, maxDepth, favor)
 			possibleMoves[chosenMove].obj.flipPieces(possibleMoves[chosenMove].pieces);
 
 			if (GAME.player == ogb.player) {
-				favor -= ghostFavor;
+				favor -= maxFavor;
 			} else {
-				favor += ghostFavor;
+				favor += maxFavor;
 			}
 
 			currentDepth++;
-			favor = computerMoveRecursive(board, currentDepth, maxDepth, favor);
+
+			console.log("go deeper. favor at currentDepth of "+currentDepth+": "+favor);
+
+			var nextMove = ogb.computerMoveRecursive(board, currentDepth, maxDepth, favor);
+			if (nextMove) {
+				favor = nextMove;
+			}
+
+			return favor;
 		} else {
 			return favor;
 		}
@@ -465,8 +460,15 @@ var GhostBoard = function(board, moveToMake, currentDepth, maxDepth, favor)
 		return favor;
 	}
 
+	this.board = this.createGhostBoard(board, moveToMake); // Create the initial ghost board taking into account the new piece to place and pieces to flip
+	// Place the piece and flip the others
+	this.board[moveToMake.obj.myX][moveToMake.obj.myY].obj.placePiece();
+	this.board[moveToMake.obj.myX][moveToMake.obj.myY].obj.flipPieces(moveToMake.pieces);
+	
+	console.log(moveToMake.obj.myX+", "+moveToMake.obj.myY);
+	
 	// This will be a number - the highest possible favor for this move assuming intelligent play
-	return computerMoveRecursive(newBoard, currentDepth, maxDepth, favor);
+	return this;
 }
 
 /*
@@ -480,20 +482,12 @@ var GhostSquare = function (g, acs, dwn)
 	this.myY = dwn;
 	this.myPlayer = null;
 
-	console.log(this);
-
-	this.placePiece = function(piecesToFlip)
+	this.placePiece = function()
 	{
-		console.log("place ghost piece");
-		console.log(this.game);
-		console.log(this.game.board[this.myX][this.myY]);
-
 		if (this.game.board[this.myX][this.myY].obj.myPlayer == null) {
 			//set the board
 			this.game.board[this.myX][this.myY].obj.myPlayer = this.game.player;
 			this.myPlayer = this.game.player;
-
-			squareObj.flipPieces(piecesToFlip);
 		}
 	}
 

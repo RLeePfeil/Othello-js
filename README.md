@@ -2,6 +2,8 @@
 
 Play othello against a simple AI in html, css and javascript. Scales to all device sizes.
 
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=CPa9pOOKZaA" target="_blank"><img src="http://img.youtube.com/vi/CPa9pOOKZaA/0.jpg" alt="Othello game" width="240" height="180" border="10" /></a>
+
 ## Installation
 
 No installation, this is a standalone web app, just open othello.html

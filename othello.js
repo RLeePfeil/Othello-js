@@ -27,6 +27,9 @@ var GAME = GAME ||
 	errors: null, // Error holding div
 	player: 'player1', // Holds the current player as a string
 
+	player1: 'human',
+	player2: 'ai',
+
 	tweens: {}, // Holds animations
 
 	board: [], // All the pieces in the board as an array
@@ -88,7 +91,7 @@ var GAME = GAME ||
 	},
 
 	passTurn: function() {
-		alert("Passing turn...");
+		GAME.showError("Passing turn . . .");
 		GAME.switchPlayer();
 	},
 
@@ -100,21 +103,17 @@ var GAME = GAME ||
 	{
 		if (GAME.player == 'player1') {
 			GAME.player = 'player2';
-			// update to say "player 2" or "White's Move"
 			GAME.showMessage("White's Move");
-
-			// Every time we switch players, show valid moves!
-			GAME.validMoves();
-
-			// Take a bit to make it seem like the computer is thinking
-			setTimeout(GAME.computerMove, Math.round(800+Math.random()*1200));
-		} else if (GAME.player == 'player2') {
+		} else {
 			GAME.player = 'player1';
-			// update to say "player 1" or "Black's Move"
 			GAME.showMessage("Black's Move");
+		}
 
-			// Every time we switch players, show valid moves!
-			GAME.validMoves();
+		// Every time we switch players, show valid moves!
+		GAME.validMoves();
+
+		if (GAME[GAME.player] == "ai") {
+			setTimeout(GAME.computerMove, Math.round(800+Math.random()*1200));
 		}
 	},
 

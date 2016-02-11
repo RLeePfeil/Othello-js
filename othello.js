@@ -262,16 +262,18 @@ var GAME = GAME ||
 	/*
 	 * AI for computer move
 	 */
-	computerMove: function()
+	computerMove: function(board)
 	{
+		board = board == undefined ? GAME.board : board;
+
 		var possibleMoves = []; // Holds the number of possible moves
 
-		for (var c=0; c<GAME.board.length; c++) {
-			for (var r=0; r<GAME.board[c].length; r++) {
-				if(GAME.board[c][r].obj.myPlayer == null) {
-					var checkPieceResult = GAME.board[c][r].obj.checkPiece();
+		for (var c=0; c<board.length; c++) {
+			for (var r=0; r<board[c].length; r++) {
+				if(board[c][r].obj.myPlayer == null) {
+					var checkPieceResult = board[c][r].obj.checkPiece();
 					if (checkPieceResult != false) {
-						possibleMoves.push({'obj':GAME.board[c][r].obj, 'pieces':checkPieceResult});
+						possibleMoves.push({'obj':board[c][r].obj, 'pieces':checkPieceResult});
 					}
 				}
 			}
@@ -292,6 +294,11 @@ var GAME = GAME ||
 		var chosenMove = 0; // The index of the possibleMoves array with the highest favor
 
 		for (var i=0; i< possibleMoves.length; i++) {
+			// Create ghost boards and follow possible moves through
+			var ghost = new GhostBoard(board, possibleMoves[i]);
+			console.log("-ghost-");
+			console.log(ghost);
+
 			// Add up the number of pieces that would be flipped
 			var tempFavor = 0;
 			for (var m=0; m<possibleMoves[i].pieces.length; m++) {
@@ -329,8 +336,281 @@ var GAME = GAME ||
 
 
 
+/*
+	Dat sudo code
+	Game board requests next best move
+
+*/
 
 
+/*
+ * Takes a potential board configuration and calculates the best computer move based on future probability
+ */
+var GhostBoard = function(board, moveToMake, currentDepth, maxDepth, favor)
+{
+	var ogb = this; // ogb stands for "originalGhostBoard"
+	currentDepth = currentDepth == undefined ? 2 : currentDepth;
+	maxDepth = maxDepth == undefined ? 2 : maxDepth;
+	var across = board.length;
+	var down = board[0].length;
+	var player = GAME.player; // The ghost board is created with the original player
+	board = createGhostBoard(board, moveToMake); // Create the initial ghost board taking into account the new piece to place and pieces to flip
+
+	function createGhostBoard(board, moveToMake)
+	{
+		var newBoard = [];
+
+		// Assemble the ghost board
+		for (var c=0; c<board.length; c++) {
+			newBoard.push([]);
+			for (var r=0; r<board[c].length; r++) {
+				var thePlayer = null;
+
+				// If this piece has a player, assign it
+				if (board[c][r].obj.myPlayer) {
+					thePlayer = board[c][r].obj.myPlayer;
+				}
+				
+				// Replace the square on the ghost board with a ghost square
+				var newGhostSquare = new GhostSquare(ogb, c, r);
+				newGhostSquare.myPlayer = thePlayer;
+				newBoard[c].push( {obj: newGhostSquare, pieces: null} );
+			}
+		}
+
+		// Place the piece and flip the others
+		newBoard[moveToMake.obj.myX][moveToMake.obj.myY].obj.placePiece();
+		newBoard[moveToMake.obj.myX][moveToMake.obj.myY].obj.flipPieces(moveToMake.pieces);
+
+		return newBoard;
+	}
+
+	function computerMoveRecursive(board, currentDepth, maxDepth, favor)
+	{
+		var possibleMoves = []; // Holds the number of possible moves
+
+		for (var c=0; c<board.length; c++) {
+			for (var r=0; r<board[c].length; r++) {
+				if(board[c][r].obj.myPlayer == null) {
+					var checkPieceResult = board[c][r].obj.checkPiece();
+					if (checkPieceResult != false) {
+						possibleMoves.push({'obj':board[c][r].obj, 'pieces':checkPieceResult});
+					}
+				}
+			}
+		}
+
+		if (possibleMoves.length == 0) {return false;}
+
+		var indexToPlace = null;
+
+		// See if any of the moves are corner pieces - if so, go for it!
+
+		/* Moves with the highest favor will be chosen.
+		 * +1 favor for each piece that can be flipped
+		 * +10 favor for a corner piece
+		 * +5 favor for a side piece
+		 * -X for favor of best move that could be made by opponent using same credentials TODO
+		 */
+
+		var ghostFavor = 0; // Holds the highest favor value using credentials above
+		var chosenMove = 0; // The index of the possibleMoves array with the highest favor
+
+		for (var i=0; i< possibleMoves.length; i++) {
+			// THIS IS THE MAGIC. for each possible move, take the board and the current levels and feed it into the recursive function.
+
+
+			// Add up the number of pieces that would be flipped
+			var tempFavor = 0;
+			for (var m=0; m<possibleMoves[i].pieces.length; m++) {
+				for (var n=0; n<possibleMoves[i].pieces[m].length; n++) {
+					tempFavor++;
+				}
+			}
+
+			// Is the square on the left/right edge of the board?
+			if (possibleMoves[i].obj.myX == 0 || possibleMoves[i].obj.myX == GAME.across-1) {
+				tempFavor += 5;
+			}
+
+			// Is the square on the top/bottom edge of the board?
+			if (possibleMoves[i].obj.myY == 0 || possibleMoves[i].obj.myY == GAME.down-1) {
+				tempFavor += 5;
+			}
+
+			// If this move has the highest favor, choose it
+			if (tempFavor > ghostFavor) {
+				ghostFavor = tempFavor;
+				chosenMove = i;
+			}
+		}
+
+		// Keep going deeper!
+		if (currentDepth < maxDepth) {
+			possibleMoves[chosenMove].obj.placePiece();
+			possibleMoves[chosenMove].obj.flipPieces(possibleMoves[chosenMove].pieces);
+
+			if (GAME.player == ogb.player) {
+				favor -= ghostFavor;
+			} else {
+				favor += ghostFavor;
+			}
+
+			currentDepth++;
+			favor = computerMoveRecursive(board, currentDepth, maxDepth, favor);
+		} else {
+			return favor;
+		}
+
+		return favor;
+	}
+
+	// This will be a number - the highest possible favor for this move assuming intelligent play
+	return computerMoveRecursive(newBoard, currentDepth, maxDepth, favor);
+}
+
+/*
+ * Square class for AI move planning
+ */
+var GhostSquare = function (g, acs, dwn)
+{
+	var squareObj = this;
+	this.game = g;
+	this.myX = acs;
+	this.myY = dwn;
+	this.myPlayer = null;
+
+	console.log(this);
+
+	this.placePiece = function(piecesToFlip)
+	{
+		console.log("place ghost piece");
+		console.log(this.game);
+		console.log(this.game.board[this.myX][this.myY]);
+
+		if (this.game.board[this.myX][this.myY].obj.myPlayer == null) {
+			//set the board
+			this.game.board[this.myX][this.myY].obj.myPlayer = this.game.player;
+			this.myPlayer = this.game.player;
+
+			squareObj.flipPieces(piecesToFlip);
+		}
+	}
+
+	//returns false if move is invalid (no pieces of opposite color are near it, and no moves can be made
+	//returns with the pieces to flip (in order) if the move is valid
+	this.checkPiece = function()
+	{
+		var opposingPlayer = '';
+		var thisPlayer = '';
+		if (this.game.player == 'player1') { opposingPlayer = 'player2'; thisPlayer = 'player1'; }
+		else { opposingPlayer = 'player1'; thisPlayer = 'player2'; }
+
+
+		var modifiers = [function(spy){spy.y--;return spy;},			//up
+								 function(spy){spy.x++; spy.y--;return spy;},	//up right
+								 function(spy){spy.x++;return spy;},			//right
+								 function(spy){spy.x++; spy.y++;return spy;},	//down right
+								 function(spy){spy.y++;return spy;},			//down
+								 function(spy){spy.x--; spy.y++;return spy;},	//down left
+								 function(spy){spy.x--;return spy;},			//left
+								 function(spy){spy.x--; spy.y--;return spy;}];//up left
+
+		var pieceArray = [];
+
+		for(var i=0; i<modifiers.length; i++)
+		{
+			var spy = {'x':this.myX, 'y':this.myY};
+			var tempList = [];
+			var isValid = false;
+			var nextPiece = true;
+
+			do {
+				spy = modifiers[i](spy); //modify the point value we're checking
+
+				if (isWithinBounds()) {
+
+					//Flash to show pieces that are being checked
+					//game.board[spy.x][spy.y].obj.beacon_mc.play();
+
+					var isOppositeResult = isOpposite();
+
+					if (isOppositeResult == null) {
+						nextPiece = false; //don't check the next piece in this direction
+					} else if (isOppositeResult == true) {
+						tempList.push({'x':spy.x, 'y':spy.y});
+					} else if (isOppositeResult == false) {
+						if (tempList.length > 0) {
+							isValid = true;
+						} else {
+							nextPiece = false; //don't check the next piece in this direction
+						}
+					}
+				}
+			} while(isWithinBounds() && isValid == false && nextPiece == true);
+
+			if (isValid != false && tempList.length > 0) {
+				pieceArray.push(tempList);
+			}
+			//console.log("reset: "+i);
+		}
+
+		//if there are no pieces to flip, return false
+		if (pieceArray.length == 0) {
+			return false;
+		} else { //else, return the collected array of flippable pieces
+			return pieceArray;
+		}
+
+		//function resetSpy() {spy.x = myX; spy.y = myY;}
+
+		function isWithinBounds() {
+			//console.log("within bounds test")
+			if(spy.x >= 0 && spy.x <= squareObj.game.across-1 && spy.y >= 0 && spy.y <= squareObj.game.down-1) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		//Checks to see if the piece chosen is of the opposite color. if there is no piece, null is returned. if
+		function isOpposite() {
+			if (squareObj.game.board[spy.x][spy.y].obj.myPlayer == opposingPlayer) {
+				return true;
+			}
+			else if (squareObj.game.board[spy.x][spy.y].obj.myPlayer == thisPlayer) {
+				return false;
+			}
+			else {
+				return null;
+			}
+		}
+	}
+
+	this.flipPieces = function(which)
+	{
+		for (var i=0; i<which.length; i++)
+		{
+			for (var j=0; j<which[i].length; j++)
+			{
+				squareObj.game.board[which[i][j].x][which[i][j].y].obj.flipMe();
+			}
+		}
+
+		squareObj.game.switchPlayer();
+	}
+
+	this.flipMe = function()
+	{
+		if (squareObj.myPlayer == 'player1') {
+			squareObj.myPlayer = 'player2';
+		} else if (squareObj.myPlayer == 'player2') {
+			squareObj.myPlayer = 'player1';
+		}
+	}
+
+	return this;
+}
 
 
 /*

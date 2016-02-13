@@ -27,10 +27,16 @@ var GAME = GAME ||
 	errors: null, // Error holding div
 	player: 'player1', // Holds the current player as a string
 
-	player1: 'human',
-	player2: 'ai',
-
-	tweens: {}, // Holds animations
+	players: {
+		player1: {
+			ai: true,
+			skill: 2
+		},
+		player2: {
+			ai: false,
+			skill: 2
+		}
+	},
 
 	board: [], // All the pieces in the board as an array
 
@@ -67,10 +73,11 @@ var GAME = GAME ||
 
 		console.log("Black's Move");
 		GAME.showMessage("Black's Move");
-		// TODO show whose turn it is
-		//whoseTurn_mc.gotoAndStop('player1');
-		//whoseTurn_txt.mouseEnabled = false;
-		//whoseTurn_txt.text = "Black's Move"
+
+		// If player1 is ai, get rollin'
+		if (GAME.players.player1.ai) {
+			setTimeout(GAME.computerMove, 1500);
+		}
 	},
 
 	/*
@@ -112,7 +119,7 @@ var GAME = GAME ||
 		// Every time we switch players, show valid moves!
 		GAME.validMoves();
 
-		if (GAME[GAME.player] == "ai") {
+		if (GAME.players[GAME.player].ai) {
 			setTimeout(GAME.computerMove, Math.round(800+Math.random()*1200));
 		}
 	},
@@ -278,6 +285,12 @@ var GAME = GAME ||
 			}
 		}
 
+		if (possibleMoves.length == 0) {
+			GAME.showError("Computer can't move!");
+			GAME.switchPlayer();
+			return false;
+		}
+
 		var indexToPlace = null;
 
 		// See if any of the moves are corner pieces - if so, go for it!
@@ -289,12 +302,13 @@ var GAME = GAME ||
 		 * -X for favor of best move that could be made by opponent using same credentials TODO
 		 */
 
-		var favor = -1*GAME.board.across*GAME.board.down; // Holds the highest favor value using credentials above
+		var favor = -99999; // Holds the highest favor value using credentials above
 		var chosenMove = 0; // The index of the possibleMoves array with the highest favor
 
+		console.log("AI player of skill "+GAME.players[GAME.player].skill+" is placing");
 		for (var i=0; i< possibleMoves.length; i++) {
 			// Create ghost boards and follow possible moves through
-			var ghostBoard = new GhostBoard(board, possibleMoves[i]);
+			var ghostBoard = new GhostBoard(board, possibleMoves[i], 0, GAME.players[GAME.player].skill);
 			tempFavor = ghostBoard.computerMoveRecursive(ghostBoard.board, ghostBoard.currentDepth, ghostBoard.maxDepth);
 			console.log("TOTAL favor for possibility "+i+": "+tempFavor);
 
@@ -305,13 +319,8 @@ var GAME = GAME ||
 			}
 		}
 
-		if (favor == 0 && chosenMove == 0) {
-			GAME.showError("Computer can't move!");
-			GAME.switchPlayer();
-		} else {
-			possibleMoves[chosenMove].obj.placePiece(null, false);
-			setTimeout(possibleMoves[chosenMove].obj.flipPieces, 400, possibleMoves[chosenMove].pieces);
-		}
+		possibleMoves[chosenMove].obj.placePiece(null, false);
+		setTimeout(possibleMoves[chosenMove].obj.flipPieces, 400, possibleMoves[chosenMove].pieces);
 	}
 }
 
@@ -441,7 +450,7 @@ var GhostBoard = function(board, moveToMake, currentDepth, maxDepth, favor)
 			}
 
 			if (cornerCheck == 2) {
-				favor += 20; // Corners are hella important!
+				favor += 50; // Corners are hella important!
 			}
 
 			// If this move has the highest favor, choose it
@@ -456,15 +465,19 @@ var GhostBoard = function(board, moveToMake, currentDepth, maxDepth, favor)
 			possibleMoves[chosenMove].obj.placePiece();
 			possibleMoves[chosenMove].obj.flipPieces(possibleMoves[chosenMove].pieces);
 
+			console.log(board);
+
 			if (GAME.player == ogb.player) {
 				favor -= maxFavor;
 			} else {
 				favor += maxFavor;
 			}
 
+			ogb.switchPlayer();
+
 			currentDepth++;
 
-			console.log("go deeper. favor at currentDepth of "+currentDepth+": "+favor);
+			console.log("player: "+ogb.player+"  depth: "+currentDepth+"  current favor: "+maxFavor+"  favor total: "+favor);
 
 			var nextMove = ogb.computerMoveRecursive(board, currentDepth, maxDepth, favor);
 			if (nextMove) {
@@ -651,8 +664,8 @@ var Square = function (g, acs, dwn)
 	}
 	this.mySquare.setAttribute("class", classlist);
 	this.mySquare.onclick = function(){
-		// Only allow clicking if it's the player's turn
-		if (squareObj.game.player == "player1") {
+		// Only allow clicking if it's a human player's turn
+		if (!squareObj.game.players[squareObj.game.player].ai) {
 			squareObj.placePiece(null, true);
 		}
 	};

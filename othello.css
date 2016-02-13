@@ -150,7 +150,7 @@ body {
 
 .piece {
   position: absolute;
-  top: -1000%;
+  top: 15%;
   left: 15%;
   border-radius: 100%;
   width: 70%;
@@ -160,16 +160,36 @@ body {
   box-shadow: 1px 2px 1px rgba(0, 0, 0, 0.35), -1px -2px 4px rgba(0, 0, 0, 0.35) inset;
   transition: all .3s ease-in-out 0s;
   opacity: 1;
-  transform: scale(2);
+  transform: translateY(-1000%) scale(2);
   transition: all .35s ease-out 0s;
   margin-top: -.2em;
   opacity: .5;
 }
 
 .piece.placed {
-  transform: scale(1);
+  transform: translateY(0%) scale(1);
   opacity: 1;
-  top: 15%;
+}
+
+.piece::after {
+  /*content: "";*/ /* remove for now */
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
+  background-color: rgba(0,0,0,.1);
+  box-shadow: 0 0 20px 0 rgba(0,0,0,.6);
+  border-radius: 100%;
+  transform: translateY(500%);
+  transition: all .35s ease-out 0s;
+  z-index: -1;
+}
+
+.piece.placed::after {
+  background-color: rgba(0,0,0,.6);
+  box-shadow: 0 0 0 10px rgba(0,0,0,.6);
+  transform: scale(.8) translateY(0%);
 }
 
 .piece.player1 {

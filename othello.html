@@ -7,6 +7,7 @@
     <title>Othello</title>
 
     <link href="othello.css" rel="stylesheet" type="text/css" />
+    <link href="ui.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
     <div id="container">
@@ -17,16 +18,43 @@
         <span id="tally-player2">0</span>
         <a href="#pass" id="pass-button">Pass Turn</a>
         <div id="messages"></div>
+
+        <span class="option">
+  				<label>Human</label>
+  				<div id="control-p1" class="switch">
+  					<span class="switch-slide">
+  						<span class="switch-slide-label-on">AI</span>
+  						<span class="switch-slide-toggle"></span>
+  						<span class="switch-slide-label-off">HU</span>
+  					</span>
+  				</div>
+          <label>Computer</label>
+  			</span>
+
+        <span class="option">
+  				<label>Human</label>
+  				<div id="control-p1" class="switch">
+  					<span class="switch-slide">
+  						<span class="switch-slide-label-on">AI</span>
+  						<span class="switch-slide-toggle"></span>
+  						<span class="switch-slide-label-off">HU</span>
+  					</span>
+  				</div>
+          <label>Computer</label>
+  			</span>
       </div>
       <div id="game-container">
         <div id="game-board"></div>
       </div>
     </div>
 
-    <script src="othello.js" type="text/javascript"></script>
+    <script src="othello.js"></script>
     <script>
       // Start'er up!
       GAME.Othello();
     </script>
+
+    <script src="jquery.min.js"></script>
+    <script src="ui.js"></script>
   </body>
 </html>

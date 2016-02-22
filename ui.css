@@ -1,6 +1,26 @@
-.option label {
+.option {
+	display: inline-block;
+	margin: .5em;
+}
+
+.option h3 {
+	font-size: .75em;
+	margin: 0;
+	text-transform: uppercase;
+}
+
+/*.option label {
 	font-size: .5em;
-	
+  font-weight: 100;
+  text-transform: uppercase;
+  letter-spacing: .15em;
+}*/
+
+.option label {
+	font-size: .75em;
+  font-weight: 100;
+  text-transform: uppercase;
+  letter-spacing: .15em;
 }
 
 .switch {

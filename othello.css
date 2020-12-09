@@ -96,7 +96,7 @@ body {
   transform: rotateX(30deg) translateZ(200px) rotateY(2deg) rotateZ(2deg) translateY(100px) scale(.8);
   transform-style: preserve-3d;
   transform: all .35s ease-in-out 0s;
-  margin-top: -10%;
+  margin-top: 0;
 }
 
 .square {

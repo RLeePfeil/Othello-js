@@ -91,8 +91,9 @@ body {
   /* box-shadow: 0 2px 5px rgba(0,0,0,.3); */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3), 0 150px 80px rgba(0, 0, 0, 0.3);
   /*transform-origin: 0 100% 0;
-  transform: rotateX(20deg) rotateY(2deg) rotateZ(2deg);*/
-  transform: rotateX(30deg) rotateY(2deg) rotateZ(2deg) translateZ(-30em) translateY(-15em);
+  transform: rotateX(20deg) rotateY(2deg) rotateZ(2deg);
+  transform: rotateX(30deg) rotateY(2deg) rotateZ(2deg) translateZ(-30em) translateY(-15em);*/
+  transform: rotateX(30deg) translateZ(200px) rotateY(2deg) rotateZ(2deg) translateY(100px) scale(.8);
   transform-style: preserve-3d;
   transform: all .35s ease-in-out 0s;
   margin-top: -10%;
@@ -262,7 +263,7 @@ body {
 
 @media screen and (max-width: 600px) {
   #game-board {
-    margin-top: -5%;
+    margin-top: 0;
   }
 }
 
